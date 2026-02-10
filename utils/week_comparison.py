@@ -143,7 +143,6 @@ def build_week_comparison_chart(
         List of Plotly Figure objects (one per year)
     """
     import plotly.graph_objects as go
-    from plotly.subplots import make_subplots
     
     if df is None or df.empty or 'Year' not in df.columns:
         return []
@@ -157,20 +156,10 @@ def build_week_comparison_chart(
         if year_data.empty:
             continue
         
-        # Create subplots: one for price, one for volume
-        fig = make_subplots(
-            rows=2,
-            cols=1,
-            shared_xaxes=True,
-            vertical_spacing=0.1,
-            row_heights=[0.7, 0.3],
-            subplot_titles=(
-                f"{title_prefix} - {year} ({month_name} Week {week_number})",
-                f"Volume - {year}"
-            ),
-        )
+        # Create single figure for candlestick only (no volume)
+        fig = go.Figure()
         
-        # Price chart (candlestick) - green/red colors (not year-coded)
+        # Price chart (candlestick) - green/red colors
         fig.add_trace(
             go.Candlestick(
                 x=year_data.index,
@@ -184,24 +173,7 @@ def build_week_comparison_chart(
                 decreasing_line_color="red",
                 decreasing_fillcolor="red",
                 line=dict(width=1.5),
-            ),
-            row=1,
-            col=1,
-        )
-        
-        # Volume chart - green/red based on price direction
-        colors = ["red" if year_data["Close"].iloc[i] < year_data["Open"].iloc[i] else "green" 
-                  for i in range(len(year_data))]
-        fig.add_trace(
-            go.Bar(
-                x=year_data.index,
-                y=year_data['Volume'],
-                name=f"{year} Volume",
-                marker_color=colors,
-                showlegend=False,
-            ),
-            row=2,
-            col=1,
+            )
         )
         
         # Update layout with vertical zoom enabled
@@ -211,20 +183,12 @@ def build_week_comparison_chart(
             dragmode="zoom",
             hovermode="x unified",
             xaxis_rangeslider_visible=False,
+            title=f"{title_prefix} - {year} ({month_name} Week {week_number})",
         )
         
         # Configure axes
         fig.update_yaxes(
             title_text="Price",
-            row=1,
-            col=1,
-            tickformat=",",
-            fixedrange=False,  # Enable vertical zoom
-        )
-        fig.update_yaxes(
-            title_text="Volume",
-            row=2,
-            col=1,
             tickformat=",",
             fixedrange=False,  # Enable vertical zoom
         )
@@ -233,14 +197,6 @@ def build_week_comparison_chart(
         fig.update_xaxes(
             tickformat="%a %Y-%m-%d",  # Abbreviated day name + date (e.g., "Mon 2025-02-10")
             tickangle=-45,
-            row=1,
-            col=1,
-        )
-        fig.update_xaxes(
-            tickformat="%a %Y-%m-%d",  # Abbreviated day name + date
-            tickangle=-45,
-            row=2,
-            col=1,
         )
         
         figures.append(fig)

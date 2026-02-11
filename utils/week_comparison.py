@@ -176,14 +176,20 @@ def build_week_comparison_chart(
             )
         )
         
-        # Update layout with vertical zoom enabled
+        # Update layout with vertical zoom enabled (title positioned below toolbar to avoid overlap)
         fig.update_layout(
             template="plotly_white",
             height=400,
+            margin=dict(t=100),
             dragmode="zoom",
             hovermode="x unified",
             xaxis_rangeslider_visible=False,
-            title=f"{title_prefix} - {year} ({month_name} Week {week_number})",
+            title=dict(
+                text=f"{title_prefix} - {year}",
+                y=0.88,
+                yanchor="top",
+                yref="container",
+            ),
         )
         
         # Configure axes
@@ -302,14 +308,20 @@ def build_month_comparison_chart(
             )
         )
         
-        # Update layout with vertical zoom enabled
+        # Update layout with vertical zoom enabled (title positioned below toolbar to avoid overlap)
         fig.update_layout(
             template="plotly_white",
             height=400,
+            margin=dict(t=100),
             dragmode="zoom",
             hovermode="x unified",
             xaxis_rangeslider_visible=False,
-            title=f"{title_prefix} - {year} ({month_name})",
+            title=dict(
+                text=f"{title_prefix} - {year} ({month_name})",
+                y=0.88,
+                yanchor="top",
+                yref="container",
+            ),
         )
         
         # Configure axes

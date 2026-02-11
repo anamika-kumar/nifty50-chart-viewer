@@ -32,6 +32,23 @@ st.set_page_config(
     layout="wide",
 )
 
+# Smaller headers everywhere except the main title (Nifty 50 Chart Viewer)
+# Smaller Plotly modebar (zoom, pan, etc.) to avoid overlap in side-by-side charts
+st.markdown("""
+<style>
+    h2 { font-size: 1.25rem !important; font-weight: 600; }
+    h3 { font-size: 1.05rem !important; font-weight: 600; }
+    /* Reduce Plotly chart toolbar size for side-by-side comparison on laptop */
+    .modebar { transform: scale(0.72); transform-origin: top right; }
+    .modebar-btn { font-size: 12px !important; padding: 2px 3px !important; min-width: 20px !important; height: 18px !important; }
+    .modebar-group { padding: 2px 4px !important; }
+    /* Smaller font in sidebar (left pane) */
+    [data-testid="stSidebar"] { font-size: 0.875rem; }
+    [data-testid="stSidebar"] h2 { font-size: 1.05rem !important; }
+    [data-testid="stSidebar"] h3 { font-size: 0.95rem !important; }
+</style>
+""", unsafe_allow_html=True)
+
 # ---------------------------------------------------------------------------
 # Sidebar
 # ---------------------------------------------------------------------------
@@ -46,9 +63,6 @@ month = 2
 
 with st.sidebar:
     st.header("Settings")
-    st.text_input("Ticker", value=TICKER, disabled=True)
-    st.caption("For NSE stocks add .NS (e.g. RELIANCE.NS). For Nifty use ^NSEI, for Sensex use ^BSESN")
-
     st.subheader("Technical Indicators")
     show_wap = st.checkbox("Show WAP/VWAP", value=False)
     show_ema = st.checkbox("Show EMA", value=False)
@@ -139,7 +153,7 @@ st.title("Nifty 50 Chart Viewer")
 
 # Check if month comparison is enabled (doesn't need Load Chart)
 if show_month_comparison and month_comparison_years:
-    st.title("Nifty 50 Month Comparison")
+    st.header("Nifty 50 Month Comparison")
     with st.spinner(f"Loading month comparison data for {len(month_comparison_years)} years..."):
         month_df = get_month_comparison_data(TICKER, month, month_comparison_years)
     
@@ -204,7 +218,7 @@ if show_month_comparison and month_comparison_years:
 
 # Check if week comparison is enabled (doesn't need Load Chart)
 if show_week_comparison and week_comparison_years:
-    st.title("Nifty 50 Week Comparison")
+    st.header("Nifty 50 Week Comparison")
     with st.spinner(f"Loading week comparison data for {len(week_comparison_years)} years..."):
         week_df = get_week_comparison_data(TICKER, week_month, week_number, week_comparison_years)
     
@@ -238,7 +252,7 @@ if show_week_comparison and week_comparison_years:
         # Show comparison charts side by side
         comparison_figs = build_week_comparison_chart(week_df, week_month, week_number, "Nifty 50")
         if comparison_figs:
-            st.subheader(f"Side-by-Side Comparison - {month_name} Week {week_number}")
+            st.subheader("Side-by-Side Comparison")
             
             # Create columns for side-by-side display (up to 5 columns)
             num_charts = len(comparison_figs)
